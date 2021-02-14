@@ -1,6 +1,11 @@
+const https = require('https');
 const WebSocket = require('ws');
 const messagePack = require('messagepack');
 require('dotenv').config();
+
+const server = https.createServer();
+
+const wss = new WebSocket.Server({ server });
 
 const lobbies = [];
 
@@ -17,8 +22,6 @@ class LobbyUser {
     this.ws = ws;
   }
 }
-
-const wss = new WebSocket({ port: 8080 });
 
 wss.on('open', (ws) => {
   console.log('Handling new connection...');
@@ -42,4 +45,8 @@ wss.on('open', (ws) => {
       }
     }
   });
+});
+
+server.listen(process.env.PORT || 7778, () => {
+  console.log(`Server running at port ${process.env.PORT || 7778}`);
 });
