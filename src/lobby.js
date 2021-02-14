@@ -28,7 +28,7 @@ class Lobby {
     for (var i = 0; i < this.users.length; i++) {
       users.push(this.users[i].playerName);
     }
-    const data = messagePack.encode(["room", users, true, true, false]);
+    const data = messagePack.encode(["room", users, false, true, false]);
     for (var i = 0; i < this.users.length; i++) {
       this.users[i].ws.send(data);
     }
