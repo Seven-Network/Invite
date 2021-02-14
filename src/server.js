@@ -46,7 +46,6 @@ wss.on('connection', (ws) => {
   ws.on('message', (raw) => {
     // Handle authentication
     const data = messagePack.decode(raw);
-
     if (data[0] == 'auth') {
       const user = new LobbyUser(data[2], ws);
 
@@ -56,10 +55,6 @@ wss.on('connection', (ws) => {
 
       if (lobby) {
         lobby.addUser(user);
-      } else {
-        const newLobby = new Lobby(data[1]);
-        lobbies.push(newLobby);
-        newLobby.addUser(user);
       }
     }
   });
