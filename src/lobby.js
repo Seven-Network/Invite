@@ -29,11 +29,18 @@ class Lobby {
     for (var i = 0; i < this.users.length; i++) {
       users.push(this.users[i].playerName);
     }
-    var data = messagePack.encode(["room", users, true, true, false]);
+    var data = messagePack.encode(['room', users, true, true, false]);
     for (var i = 0; i < this.users.length; i++) {
       this.users[i].ws.send(data);
       if (i == 0)
-        var data = messagePack.encode(["room", users, false, true, false]);
+        var data = messagePack.encode(['room', users, false, true, false]);
+    }
+  }
+
+  startGame() {
+    var data = messagePack.encode(['start']);
+    for (var i = 0; i < this.users.length; i++) {
+      this.users[i].ws.send(data);
     }
   }
 }
@@ -47,6 +54,13 @@ class LobbyUser {
 
     ws.on('close', () => {
       this.lobby.removeUser(this.id);
+    });
+
+    ws.on('message', (raw) => {
+      const data = messagePack.decode(raw);
+      if (data[0] == 'start') {
+        this.lobby.startGame();
+      }
     });
   }
 }

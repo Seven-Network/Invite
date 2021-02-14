@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 
 const messagePack = require('messagepack');
 
-const { Lobby, LobbyUser } = require('./lobby');
+const { Lobby } = require('./lobby');
 
 require('dotenv').config();
 
