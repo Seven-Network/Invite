@@ -1,44 +1,57 @@
-const https = require('https');
+const http = require('http');
 const WebSocket = require('ws');
+
+const { v4: uuidv4 } = require('uuid');
+const express = require('express');
+const bodyParser = require('body-parser');
+
 const messagePack = require('messagepack');
+
+const { Lobby, LobbyUser } = require('./lobby');
+
 require('dotenv').config();
-
-const server = https.createServer();
-
-const wss = new WebSocket.Server({ server });
 
 const lobbies = [];
 
-class Lobby {
-  constructor(roomID) {
-    this.roomID = roomID;
-    this.users = [];
-  }
+// -- EXPRESS CONFIGURATION --
 
-  addUser(user) {
-    this.users.push(user);
-    console.log(`${user.playerName} joined ${this.roomID}`);
-  }
-}
+const app = express();
 
-class LobbyUser {
-  constructor(playerName, ws) {
-    this.playerName = playerName;
-    this.ws = ws;
-  }
-}
+app.use(bodyParser.urlencoded({ extended: true }));
 
-wss.on('open', (ws) => {
+app.get('/', (_, res) => {
+  res.send('Welcome to the Seven Network invite server ✨');
+});
+
+app.post('/create-room', (req, res) => {
+  const newLobby = new Lobby(uuidv4());
+  lobbies.push(newLobby);
+  res.json({
+    success: true,
+    result: `https://venge.io/#${newLobby.roomID}`,
+  });
+});
+
+// == EXPRESS CONFIGURATION ==
+
+// -- WEBSOCKET CONFIGURATION --
+
+const server = http.createServer(app);
+
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', (ws) => {
   console.log('Handling new connection...');
 
   ws.on('message', (raw) => {
+    // Handle authentication
     const data = messagePack.decode(raw);
 
     if (data[0] == 'auth') {
       const user = new LobbyUser(data[2], ws);
 
       const lobby = lobbies.find((val) => {
-        if (val.roomID == auth[1]) return true;
+        if (val.roomID == data[1]) return true;
       });
 
       if (lobby) {
@@ -50,8 +63,12 @@ wss.on('open', (ws) => {
       }
     }
   });
+
+  ws.send(messagePack.encode(['auth', true]));
 });
 
+// == WEBSOCKET CONFIGURATION ==
+
 server.listen(process.env.PORT || 7778, () => {
-  console.log(`Server running at port ${process.env.PORT || 7778}`);
+  console.log(`Running on port ${process.env.PORT || 7778}`);
 });
