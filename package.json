@@ -1,0 +1,16 @@
+{
+  "name": "seven-client-invite",
+  "version": "0.0.1",
+  "description": "Node WS Invite server for Seven Network",
+  "main": "./src/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Seven Network",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "messagepack": "^1.1.12",
+    "ws": "^7.4.3"
+  }
+}
