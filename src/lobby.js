@@ -4,6 +4,7 @@ const messagePack = require('messagepack');
 class Lobby {
   constructor(roomID) {
     this.roomID = roomID;
+    this.region = "NA";
     this.users = [];
   }
 
