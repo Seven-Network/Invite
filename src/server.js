@@ -47,14 +47,12 @@ wss.on('connection', (ws) => {
     // Handle authentication
     const data = messagePack.decode(raw);
     if (data[0] == 'auth') {
-      const user = new LobbyUser(data[2], ws);
-
       const lobby = lobbies.find((val) => {
         if (val.roomID == data[1]) return true;
       });
 
       if (lobby) {
-        lobby.addUser(user);
+        lobby.addUser(data[2], ws);
       }
     }
   });

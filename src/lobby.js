@@ -7,8 +7,8 @@ class Lobby {
     this.users = [];
   }
 
-  addUser(user) {
-    user.lobby = this;
+  addUser(playerName, ws) {
+    const user = new LobbyUser(playerName, ws, this);
     this.users.push(user);
     console.log(`${user.playerName} joined ${this.roomID}`);
     this.broadcastRoom();
@@ -19,6 +19,7 @@ class Lobby {
       if (val.id === id) return true;
       else return false;
     });
+    console.log(`${this.users[index].playerName} left ${this.roomID}`);
     this.users.splice(index, 1);
     this.broadcastRoom();
   }
@@ -38,11 +39,11 @@ class Lobby {
 }
 
 class LobbyUser {
-  constructor(playerName, ws) {
+  constructor(playerName, ws, lobby) {
     this.id = uuidv4();
     this.playerName = playerName;
     this.ws = ws;
-    this.lobby = null;
+    this.lobby = lobby;
 
     ws.on('close', () => {
       this.lobby.removeUser(this.id);
