@@ -14,6 +14,11 @@ class Lobby {
     this.roomID = roomID;
     this.users = [];
   }
+
+  addUser(user) {
+    this.users.push(user);
+    console.log(`${user.playerName} joined ${this.roomID}`);
+  }
 }
 
 class LobbyUser {
@@ -37,11 +42,11 @@ wss.on('open', (ws) => {
       });
 
       if (lobby) {
-        lobby.users.push(user);
+        lobby.addUser(user);
       } else {
-        const lobby = new Lobby(data[1]);
-        lobbies.push(lobby);
-        lobby.users.push(user);
+        const newLobby = new Lobby(data[1]);
+        lobbies.push(newLobby);
+        newLobby.addUser(user);
       }
     }
   });
