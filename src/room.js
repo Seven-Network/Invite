@@ -71,10 +71,12 @@ class RoomUser {
     });
 
     ws.on('message', (raw) => {
-      const data = messagePack.decode(raw);
-      if (data[0] == 'start') {
-        this.lobby.startGame();
-      }
+      try {
+        const data = messagePack.decode(raw);
+        if (data[0] == 'start') {
+          this.lobby.startGame();
+        }
+      } catch (_) {}
     });
   }
 }
