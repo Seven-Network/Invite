@@ -7,11 +7,11 @@ const bodyParser = require('body-parser');
 
 const messagePack = require('messagepack');
 
-const { Lobby } = require('./lobby');
+const { Room } = require('./room');
 
 require('dotenv').config();
 
-const lobbies = [];
+const rooms = [];
 
 // -- EXPRESS CONFIGURATION --
 
@@ -24,11 +24,11 @@ app.get('/', (_, res) => {
 });
 
 app.post('/create-room', (req, res) => {
-  const newLobby = new Lobby(uuidv4());
-  lobbies.push(newLobby);
+  const newRoom = new Room(uuidv4());
+  rooms.push(newRoom);
   res.json({
     success: true,
-    result: `https://venge.io/#${newLobby.roomID}`,
+    result: `https://venge.io/#${newRoom.roomID}`,
   });
 });
 
@@ -47,12 +47,12 @@ wss.on('connection', (ws) => {
     // Handle authentication
     const data = messagePack.decode(raw);
     if (data[0] == 'auth') {
-      const lobby = lobbies.find((val) => {
+      const room = rooms.find((val) => {
         if (val.roomID == data[1]) return true;
       });
 
-      if (lobby) {
-        lobby.addUser(data[2], ws);
+      if (room) {
+        room.addUser(data[2], ws);
       }
     }
   });

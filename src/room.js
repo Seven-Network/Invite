@@ -1,15 +1,15 @@
 const { v4: uuidv4 } = require('uuid');
 const messagePack = require('messagepack');
 
-class Lobby {
+class Room {
   constructor(roomID) {
     this.roomID = roomID;
-    this.region = "NA";
+    this.region = 'NA';
     this.users = [];
   }
 
   addUser(playerName, ws) {
-    const user = new LobbyUser(playerName, ws, this);
+    const user = new RoomUser(playerName, ws, this);
     this.users.push(user);
     console.log(`${user.playerName} joined ${this.roomID}`);
     this.broadcastRoom();
@@ -46,7 +46,7 @@ class Lobby {
   }
 }
 
-class LobbyUser {
+class RoomUser {
   constructor(playerName, ws, lobby) {
     this.id = uuidv4();
     this.playerName = playerName;
@@ -67,6 +67,6 @@ class LobbyUser {
 }
 
 module.exports = {
-  Lobby,
-  LobbyUser,
+  Room,
+  RoomUser,
 };
