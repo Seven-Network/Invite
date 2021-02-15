@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const http = require('http');
 const WebSocket = require('ws');
 
@@ -8,8 +10,6 @@ const bodyParser = require('body-parser');
 const messagePack = require('messagepack');
 
 const { Room } = require('./room');
-
-require('dotenv').config();
 
 const rooms = [];
 

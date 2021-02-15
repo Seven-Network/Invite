@@ -1,5 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
 const messagePack = require('messagepack');
+const axios = require('axios').default;
+
+const SERVER_HOST = 'https://sn-game-na.herokuapp.com';
 
 class Room {
   constructor(roomID) {
@@ -39,10 +42,20 @@ class Room {
   }
 
   startGame() {
-    var data = messagePack.encode(['start']);
-    for (var i = 0; i < this.users.length; i++) {
-      this.users[i].ws.send(data);
-    }
+    // Create game server
+    axios
+      .get(
+        `${SERVER_HOST}/create-game/${this.roomID}/${process.env.SERVER_LINK_PASS}`
+      )
+      .then((_) => {
+        var data = messagePack.encode(['start']);
+        for (var i = 0; i < this.users.length; i++) {
+          this.users[i].ws.send(data);
+        }
+      })
+      .catch((_) => {
+        // TODO: Exception handling if any
+      });
   }
 }
 
