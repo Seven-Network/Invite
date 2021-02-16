@@ -45,16 +45,18 @@ wss.on('connection', (ws) => {
 
   ws.on('message', (raw) => {
     // Handle authentication
-    const data = messagePack.decode(raw);
-    if (data[0] == 'auth') {
-      const room = rooms.find((val) => {
-        if (val.roomID == data[1]) return true;
-      });
+    try {
+      const data = messagePack.decode(raw);
+      if (data[0] == 'auth') {
+        const room = rooms.find((val) => {
+          if (val.roomID == data[1]) return true;
+        });
 
-      if (room) {
-        room.addUser(data[2], ws);
+        if (room) {
+          room.addUser(data[2], ws);
+        }
       }
-    }
+    } catch (_) {}
   });
 
   ws.send(messagePack.encode(['auth', true]));
