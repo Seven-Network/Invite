@@ -2,13 +2,13 @@ const { v4: uuidv4 } = require('uuid');
 const messagePack = require('messagepack');
 const axios = require('axios').default;
 
-const SERVER_HOST = 'https://sn-game-na.herokuapp.com';
-
 class Room {
-  constructor(roomID) {
+  constructor(roomID, region) {
     this.roomID = roomID;
-    this.region = 'NA';
+    this.region = region;
     this.users = [];
+
+    this.serverHost = global.serverList[this.region][0];
   }
 
   addUser(playerName, ws) {
@@ -45,7 +45,7 @@ class Room {
     // Create game server
     axios
       .get(
-        `${SERVER_HOST}/create-game/${this.roomID}/${process.env.SERVER_LINK_PASS}`
+        `${this.serverHost}/create-game/${this.roomID}/${process.env.SERVER_LINK_PASS}`
       )
       .then((_) => {
         var data = messagePack.encode(['start']);
