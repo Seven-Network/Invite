@@ -17,12 +17,12 @@ router.post('/create-room', (_, res) => {
   });
 });
 
-router.post('/update-map', (req, res) => {
+router.post('/update-map/:map', (req, res) => {
   const room = global.rooms.find((val) => {
     if (val.roomID == req.query.roomID) return true;
   });
   if (room) {
-    room.map = req.query.map;
+    room.map = req.params.map;
     res.json({
       success: true,
     });
