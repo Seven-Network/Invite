@@ -45,7 +45,7 @@ class Room {
     // Create game server
     axios
       .get(
-        `${this.serverHost}/create-game/${this.roomID}/${process.env.SERVER_LINK_PASS}`
+        `https://${this.serverHost}/create-game/${this.roomID}/${process.env.SERVER_LINK_PASS}`
       )
       .then((_) => {
         var data = messagePack.encode(['start']);
