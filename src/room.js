@@ -5,6 +5,7 @@ const axios = require('axios').default;
 class Room {
   constructor(roomID, region) {
     this.roomID = roomID;
+    this.map = "Sierra";
     this.region = region;
     this.users = [];
 
@@ -45,7 +46,7 @@ class Room {
     // Create game server
     axios
       .get(
-        `https://${this.serverHost}/create-game/${this.roomID}/${process.env.SERVER_LINK_PASS}`
+        `https://${this.serverHost}/create-game/${this.roomID}/${this.map}/${process.env.SERVER_LINK_PASS}`
       )
       .then((_) => {
         var data = messagePack.encode(['start']);
