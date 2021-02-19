@@ -39,7 +39,7 @@ router.post('/get-room/:roomID', async (req, res) => {
   // Since there's only NA, this will suffice
   for (var i = 0; i < global.serverList['NA'].length; i++) {
     const response = await axios.get(
-      `https://${global.serverList['NA'][i]}/get-game/${req.params.roomID}/${process.env.SERVER_LINK_PASS}`
+      `http://${global.serverList['NA'][i]}/get-game/${req.params.roomID}/${process.env.SERVER_LINK_PASS}`
     );
     if (response.status == 200) {
       res.json({
