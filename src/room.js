@@ -87,8 +87,9 @@ class Room {
                 this.users[i].ws.send(data);
               }
             })
-            .catch((_) => {
+            .catch((error) => {
               // TODO: Exception handling if any
+              console.log(`Could not start game`, error);
             });
         }
       });
