@@ -73,4 +73,29 @@ router.post('/get-room/:roomID', async (req, res) => {
   });
 });
 
+router.post('/matchmaking', async (req, res) => {
+  // Look for rooms which are not full.
+  const room = global.rooms.find((val) => {
+    if (val.users.length < 6) {
+      return true;
+    }
+  });
+  if (room) {
+    res.json({
+      success: true,
+      result: `#${room.roomID}`,
+    });
+  } else {
+    // Create a new room if a suitable one
+    // doesn't exist.
+    const newRoom = new Room(uuidv4(), 'NA');
+    newRoom.isPublic = true;
+    global.rooms.push(newRoom);
+    res.json({
+      success: true,
+      result: `#${newRoom.roomID}`,
+    });
+  }
+});
+
 module.exports = router;
