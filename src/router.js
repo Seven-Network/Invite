@@ -73,4 +73,8 @@ router.post('/get-room/:roomID', async (req, res) => {
   });
 });
 
+router.post('/matchmaking', async (req, res) => {
+  
+});
+
 module.exports = router;
