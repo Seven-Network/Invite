@@ -96,13 +96,7 @@ class Room {
               }
             })
             .catch((_) => {
-              // Discard this lobby as it is broken
-              const index = global.rooms.findIndex((val) => {
-                if (val.roomID == this.roomID) return true;
-              });
-              if (index > -1) {
-                global.rooms.splice(index, 1);
-              }
+              
             });
         }
       });
