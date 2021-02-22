@@ -34,6 +34,14 @@ class Room {
     console.log(`${this.users[index].playerName} left ${this.roomID}`);
     this.users.splice(index, 1);
     this.broadcastRoom();
+    if (this.users.length < 1) {
+      const index = global.rooms.findIndex((val) => {
+        if (val.roomID == this.roomID) return true;
+      });
+      if (index > -1) {
+        global.rooms.splice(index, 1);
+      }
+    }
   }
 
   broadcastRoom() {
@@ -87,9 +95,14 @@ class Room {
                 this.users[i].ws.send(data);
               }
             })
-            .catch((error) => {
-              // TODO: Exception handling if any
-              console.log(`Could not start game`, error);
+            .catch((_) => {
+              // Discard this lobby as it is broken
+              const index = global.rooms.findIndex((val) => {
+                if (val.roomID == this.roomID) return true;
+              });
+              if (index > -1) {
+                global.rooms.splice(index, 1);
+              }
             });
         }
       });
