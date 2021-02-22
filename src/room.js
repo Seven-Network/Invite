@@ -5,8 +5,9 @@ const axios = require('axios').default;
 class Room {
   constructor(roomID, region) {
     this.roomID = roomID;
-    this.map = "Sierra";
+    this.map = 'Sierra';
     this.region = region;
+    this.isPublic = false;
     this.users = [];
 
     this.serverHost = global.serverList[this.region][0];
@@ -17,6 +18,12 @@ class Room {
     this.users.push(user);
     console.log(`${user.playerName} joined ${this.roomID}`);
     this.broadcastRoom();
+
+    // If there is more than one player in a public lobby,
+    // start the game.
+    if (this.isPublic && this.users.length > 1) {
+      this.startGame();
+    }
   }
 
   removeUser(id) {
@@ -27,6 +34,14 @@ class Room {
     console.log(`${this.users[index].playerName} left ${this.roomID}`);
     this.users.splice(index, 1);
     this.broadcastRoom();
+    if (this.users.length < 1) {
+      const index = global.rooms.findIndex((val) => {
+        if (val.roomID == this.roomID) return true;
+      });
+      if (index > -1) {
+        global.rooms.splice(index, 1);
+      }
+    }
   }
 
   broadcastRoom() {
@@ -34,11 +49,20 @@ class Room {
     for (var i = 0; i < this.users.length; i++) {
       users.push(this.users[i].playerName);
     }
+
     var data = messagePack.encode(['room', users, true, true, false]);
+
     for (var i = 0; i < this.users.length; i++) {
       this.users[i].ws.send(data);
-      if (i == 0)
+
+      if (i == 0 && !this.isPublic) {
+        // Have the first person of the room be the owner
+        // if it is a private game.
         var data = messagePack.encode(['room', users, false, true, false]);
+      }
+
+      if (this.isPublic)
+        this.users[i].ws.send(messagePack.encode(['matchmaking']));
     }
   }
 
@@ -46,7 +70,7 @@ class Room {
     // Create game server
     axios
       .get(
-        `https://${this.serverHost}/create-game/${this.roomID}/${this.map}/${process.env.SERVER_LINK_PASS}`
+        `http://${this.serverHost}/create-game/${this.roomID}/${this.map}/${process.env.SERVER_LINK_PASS}`
       )
       .then((_) => {
         var data = messagePack.encode(['start']);
@@ -55,7 +79,32 @@ class Room {
         }
       })
       .catch((_) => {
-        // TODO: Exception handling if any
+        // If the request to create game fails
+        // we can check whether it failed because
+        // the game already exists.
+        if (this.isPublic) {
+          axios
+            .get(
+              `http://${this.serverHost}/get-game/${this.roomID}/${process.env.SERVER_LINK_PASS}`
+            )
+            .then((_) => {
+              // In the case where the game exists,
+              // just ask users to join the game.
+              var data = messagePack.encode(['start']);
+              for (var i = 0; i < this.users.length; i++) {
+                this.users[i].ws.send(data);
+              }
+            })
+            .catch((_) => {
+              // Discard this lobby as it is broken
+              const index = global.rooms.findIndex((val) => {
+                if (val.roomID == this.roomID) return true;
+              });
+              if (index > -1) {
+                global.rooms.splice(index, 1);
+              }
+            });
+        }
       });
   }
 }

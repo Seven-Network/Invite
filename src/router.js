@@ -39,7 +39,7 @@ router.post('/get-room/:roomID', async (req, res) => {
   // Since there's only NA, this will suffice
   for (var i = 0; i < global.serverList['NA'].length; i++) {
     const response = await axios.get(
-      `https://${global.serverList['NA'][i]}/get-game/${req.params.roomID}/${process.env.SERVER_LINK_PASS}`
+      `http://${global.serverList['NA'][i]}/get-game/${req.params.roomID}/${process.env.SERVER_LINK_PASS}`
     );
     if (response.status == 200) {
       res.json({
@@ -71,6 +71,31 @@ router.post('/get-room/:roomID', async (req, res) => {
     success: false,
     message: 'Could not find room',
   });
+});
+
+router.post('/matchmaking', async (req, res) => {
+  // Look for rooms which are not full.
+  const room = global.rooms.find((val) => {
+    if (val.users.length < 6) {
+      return true;
+    }
+  });
+  if (room) {
+    res.json({
+      success: true,
+      result: `#${room.roomID}`,
+    });
+  } else {
+    // Create a new room if a suitable one
+    // doesn't exist.
+    const newRoom = new Room(uuidv4(), 'NA');
+    newRoom.isPublic = true;
+    global.rooms.push(newRoom);
+    res.json({
+      success: true,
+      result: `#${newRoom.roomID}`,
+    });
+  }
 });
 
 module.exports = router;
