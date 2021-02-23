@@ -96,7 +96,13 @@ class Room {
               }
             })
             .catch((_) => {
-              
+              if (this.isPublic) {
+                // just go lol, idgaf
+                var data = messagePack.encode(['start']);
+                for (var i = 0; i < this.users.length; i++) {
+                  this.users[i].ws.send(data);
+                }
+              }
             });
         }
       });
