@@ -30,7 +30,6 @@ wss.on('connection', (ws) => {
         });
         if (room) {
           room.addUser(data[2], ws);
-          ws.send(messagePack.encode(['start']));
         }
       }
     } catch (_) {}
