@@ -1,6 +1,6 @@
 {
   "name": "seven-client-invite",
-  "version": "0.1.0",
+  "version": "0.1.01",
   "description": "Node WS Invite server for Seven Network",
   "main": "./src/server.js",
   "scripts": {
