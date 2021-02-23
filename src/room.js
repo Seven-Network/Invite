@@ -11,6 +11,10 @@ class Room {
     this.users = [];
 
     this.serverHost = global.serverList[this.region][0];
+
+    this.broadcastInterval = setInterval(() => {
+      this.broadcastRoom();
+    }, 10000);
   }
 
   addUser(playerName, ws) {
@@ -35,6 +39,7 @@ class Room {
     this.users.splice(index, 1);
     this.broadcastRoom();
     if (this.users.length < 1) {
+      clearInterval(this.broadcastInterval);
       const index = global.rooms.findIndex((val) => {
         if (val.roomID == this.roomID) return true;
       });
